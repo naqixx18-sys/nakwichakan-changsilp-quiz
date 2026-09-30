@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quiz นักวิชาการช่างศิลป์</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#202638;--muted:#72798b;--main:#6c63ff;--main2:#8b84ff;--good:#25a56a;--bad:#e95b63}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans Thai",sans-serif;background:var(--bg);color:var(--text)}
+.app{max-width:760px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.logo{font-weight:800;font-size:20px}.pill{background:#eeeefe;color:var(--main);padding:7px 11px;border-radius:999px;font-size:13px;font-weight:700}
+.card{background:var(--card);border-radius:22px;padding:24px;box-shadow:0 8px 30px #20263812}
+.progress{height:9px;background:#eceef5;border-radius:99px;overflow:hidden;margin:5px 0 20px}.bar{height:100%;background:linear-gradient(90deg,var(--main),var(--main2));transition:.25s}
+.qno{color:var(--main);font-weight:800;font-size:14px}.question{font-size:21px;font-weight:800;line-height:1.55;margin:8px 0 22px}
+.option{display:block;width:100%;text-align:left;border:2px solid #e7e9f0;background:#fff;border-radius:15px;padding:14px 16px;margin:10px 0;font-size:16px;cursor:pointer;transition:.15s}
+.option:hover{border-color:var(--main2);background:#f8f7ff}.option.selected{border-color:var(--main);background:#f0efff}.letter{display:inline-flex;width:30px;height:30px;border-radius:50%;align-items:center;justify-content:center;background:#f0f1f6;margin-right:9px;font-weight:800}
+.actions{display:flex;justify-content:space-between;gap:10px;margin-top:22px}.btn{border:0;border-radius:13px;padding:12px 20px;font-size:16px;font-weight:800;cursor:pointer}.secondary{background:#eef0f5;color:#454b5b}.primary{background:var(--main);color:#fff}.primary:disabled{opacity:.4;cursor:not-allowed}
+.start{text-align:center;padding:18px 4px}.start h1{font-size:30px;margin:5px 0 10px}.start p{color:var(--muted);line-height:1.7}.big{font-size:17px;padding:14px 26px}
+.result{text-align:center}.score{font-size:54px;font-weight:900;color:var(--main);margin:4px}.small{color:var(--muted)}.review{text-align:left;margin-top:25px}.review-item{border:1px solid #e5e7ef;border-radius:15px;padding:15px;margin:10px 0}.review-item.good{border-left:5px solid var(--good)}.review-item.bad{border-left:5px solid var(--bad)}.ans{font-weight:700;margin-top:6px}.explain{color:#555d70;margin-top:7px;line-height:1.55}
+@media(max-width:520px){.app{padding:10px}.card{padding:18px;border-radius:18px}.question{font-size:19px}.option{font-size:15px}.actions .btn{padding:11px 14px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><div class="logo">🎨 Art Quiz</div><div class="pill">นักวิชาการช่างศิลป์</div></div>
+  <div id="screen"></div>
+</div>
+<script>
+const bank=[
+{q:"การใช้เส้น สี หรือสัญลักษณ์ซ้ำ ๆ อย่างต่อเนื่อง (Continuity) ในการออกแบบนิทรรศการ มีประโยชน์หลักอย่างไร?",a:["ช่วยในการวางแผนและนำทางสายตาผู้ชม","ทำให้งานดูน่าเบื่อ","ลดความสวยงามของพื้นที่","ช่วยประหยัดพื้นที่จัดแสดง"],e:"Continuity ช่วยสร้างความต่อเนื่องและนำทางสายตาผู้ชม"},
+{q:"หลักของความประสาน (Closure) เกี่ยวข้องกับการรับรู้อย่างไร?",a:["การจัดวางวัตถุให้ชิดกัน","การต่อเติมสิ่งเร้าที่ขาดหายไปให้สมบูรณ์ในใจ","การปิดกั้นข้อมูลที่ไม่จำเป็น","การลดจำนวนวัตถุในพื้นที่"],e:"Closure คือการที่ผู้รับรู้เติมส่วนที่ขาดหายของสิ่งเร้าให้เกิดเป็นภาพที่สมบูรณ์"},
+{q:"ข้อใดอธิบาย Mental Image ในทางสถาปัตยกรรมและการจัดแสดงได้ถูกต้อง?",a:["ภาพถ่ายที่ใช้ในนิทรรศการ","จินตภาพหรือแผนผังในใจที่ผู้ชมสร้างขึ้นเพื่อทำความเข้าใจพื้นที่","เทคโนโลยี VR","ภาพวาดลายเส้นของศิลปิน"],e:"Mental Image คือภาพหรือแบบจำลองในใจที่ผู้ชมสร้างขึ้นเพื่อทำความเข้าใจพื้นที่"},
+{q:"การจัดผังพื้นแบบเปิด (Open type) มักส่งผลต่อพฤติกรรมผู้ชมอย่างไร?",a:["ทำให้ผู้ชมเดินถึงเป้าหมายเร็วที่สุดเสมอ","ทำให้ผู้ชมเกิดการเลี้ยวผิดได้ง่ายเพราะมีทางเลือกมาก","ทำให้ผู้ชมเดินเป็นระเบียบเพียงหนึ่งเส้นทาง","ลดการเข้าชมตู้หรือพื้นที่อื่นทั้งหมด"],e:"เนื้อหาในเอกสารระบุว่า Open type มีทางเลือกมาก จึงอาจทำให้เกิด Wrong Turn ได้ง่าย"},
+{q:"ในการจัดนิทรรศการ หากต้องการนำสื่อหรือวัตถุที่มีเนื้อหาเดียวกันมารวมไว้ด้วยกัน ควรใช้หลักใด?",a:["จัดสิ่งที่มีเนื้อหาเดียวกันไว้กลุ่มเดียวกัน","เว้นระยะห่างให้มากที่สุด","วางทุกชิ้นให้อยู่ระดับสายตา","จัดวัตถุที่แตกต่างกันไว้ด้วยกัน"],e:"การจัดกลุ่มเนื้อหาที่เหมือนกันช่วยให้ผู้ชมรับรู้ความสัมพันธ์ของข้อมูลได้ง่าย"},
+{q:"ผู้วาดภาพหลักในการทำภาพการ์ตูนแอนิเมชันเรียกว่าอะไร?",a:["Painter","In-betweener","Key animator","Background artist"],e:"Key animator คือผู้วาดภาพหลักหรือ key poses ของแอนิเมชัน"},
+{q:"หน้าที่ของ In-betweener คืออะไร?",a:["ลงสีภาพทั้งหมด","วาดภาพระหว่างภาพหลัก","ออกแบบฉากหลังเท่านั้น","ตัดต่อเสียง"],e:"In-betweener ทำหน้าที่วาดภาพช่วงกลางระหว่างภาพหลักเพื่อให้เกิดการเคลื่อนไหวต่อเนื่อง"},
+{q:"หน้าที่ของ Painter ในกระบวนการทำภาพการ์ตูนแอนิเมชันตามเนื้อหา คืออะไร?",a:["วาดภาพหลัก","วาดภาพระหว่างภาพหลัก","ลงสีหรือระบายสีภาพ","ออกแบบโครงเรื่อง"],e:"Painter มีหน้าที่ลงสีหรือระบายสีภาพให้เรียบร้อย"},
+{q:"OER ย่อมาจาก Open Educational Resources โดยมีหัวใจสำคัญเกี่ยวกับเรื่องใด?",a:["การขายคอร์สเรียนราคาแพง","การจำกัดการเข้าถึงเฉพาะนักศึกษา","การแบ่งปันทรัพยากรด้านการศึกษาที่มีคุณภาพสู่สังคมโลกอย่างเสรี","การสงวนข้อมูลไว้เฉพาะเจ้าของ"],e:"OER เน้นการแบ่งปันทรัพยากรทางการศึกษาที่มีคุณภาพให้สังคมเข้าถึงได้อย่างเสรี"},
+{q:"ตามเนื้อหาในเอกสาร ความเป็นเอกภาพ (Unity) ของงานออกแบบหมายถึงอะไร?",a:["การใช้สีจำนวนมากที่สุด","องค์ประกอบมีความเป็นหนึ่งเดียว กลมกลืน และไม่ขัดแย้งกัน","การจัดวางทุกอย่างให้เท่ากัน","การใช้วัสดุชนิดเดียวทั้งหมด"],e:"Unity คือความเป็นหนึ่งเดียวขององค์ประกอบ ทำให้งานดูกลมกลืนและเป็นส่วนเดียวกัน"},
+{q:"การผลิตภาพยนตร์แอนิเมชันสามารถใช้สีและแสงเพื่อวัตถุประสงค์ใด?",a:["เพื่อทำให้ไฟล์มีขนาดใหญ่ขึ้น","เพื่อสร้างอารมณ์และความรู้สึกของผู้ชม","เพื่อแทนเสียงทั้งหมด","เพื่อไม่ให้ต้องมีฉากหลัง"],e:"สีและแสงสามารถช่วยสร้างและเสริมอารมณ์ความรู้สึกของผู้ชม"},
+{q:"ข้อใดเป็นลักษณะของการเตรียมความพร้อมก่อนการผลิตสื่อที่เหมาะสม?",a:["เตรียมเครื่องมือ อุปกรณ์ สถานที่ และบุคลากรให้พร้อม","เริ่มผลิตทันทีโดยไม่วางแผน","เลือกอุปกรณ์หลังผลิตเสร็จ","ไม่ต้องกำหนดผู้รับผิดชอบ"],e:"การเตรียมเครื่องมือ อุปกรณ์ สถานที่ และบุคลากรเป็นส่วนสำคัญของการเตรียมการผลิต"},
+{q:"ข้อใดเป็นองค์ประกอบที่เกี่ยวข้องกับการออกแบบนิทรรศการตามแนวข้อสอบในเอกสาร?",a:["การออกแบบโปสเตอร์ การกำหนดผังงาน การจัดวางองค์ประกอบ และการเขียนบทความประกอบนิทรรศการ","การเขียนโปรแกรมอย่างเดียว","การบัญชีอย่างเดียว","การตลาดออนไลน์เท่านั้น"],e:"เอกสารยกตัวอย่างความรู้ด้านการออกแบบนิทรรศการหลายด้าน รวมถึงโปสเตอร์ ผังงาน การจัดวาง และบทความประกอบ"},
+{q:"หากต้องการให้งานออกแบบมีความกลมกลืนเป็นส่วนเดียวกัน ควรคำนึงถึงสิ่งใดตามหลัก Unity?",a:["ปริมาณ การจัดพื้นที่ สัดส่วน และการกำหนดสี","ใช้รายละเอียดให้มากที่สุด","หลีกเลี่ยงการจัดสัดส่วน","ใช้สีทุกสีเท่ากัน"],e:"เอกสารเชื่อมโยง Unity กับการจัดปริมาณ พื้นที่ สัดส่วน และสีให้เกิดความกลมกลืน"},
+{q:"ข้อใดสอดคล้องกับแนวคิด Closure มากที่สุด?",a:["เห็นรูปที่มีบางส่วนหายไป แต่สมองรับรู้เป็นรูปที่สมบูรณ์","เห็นวัตถุหลายชิ้นแล้วแยกทุกชิ้นออกจากกัน","ใช้สีเดียวในพื้นที่","เดินตามทางที่กำหนดเท่านั้น"],e:"Closure คือการเติมเต็มสิ่งเร้าที่ขาดหายทางการรับรู้ให้สมบูรณ์ในใจ"},
+{q:"หากนิทรรศการใช้เส้นหรือสัญลักษณ์ซ้ำอย่างต่อเนื่องเพื่อพาผู้ชมไปยังจุดต่าง ๆ สิ่งนี้ตรงกับหลักใด?",a:["Closure","Continuity","Wrong Turn","Open type"],e:"การใช้เส้น สี หรือสัญลักษณ์ซ้ำอย่างต่อเนื่องเพื่อชี้นำสายตาตรงกับ Continuity"},
+{q:"ข้อใดอธิบายความแตกต่างระหว่าง Key animator และ In-betweener ได้ถูกต้อง?",a:["Key animator ลงสี ส่วน In-betweener ออกแบบเสียง","Key animator วาดภาพหลัก ส่วน In-betweener วาดภาพระหว่างภาพหลัก","ทั้งสองทำหน้าที่เหมือนกันทุกประการ","Key animator ทำฉากหลัง ส่วน In-betweener ตัดต่อ"],e:"Key animator ทำภาพหลัก ส่วน In-betweener เติมภาพระหว่างภาพหลัก"},
+{q:"หากผู้ชมสร้างภาพหรือแผนผังในใจเพื่อทำความเข้าใจว่าพื้นที่นิทรรศการเชื่อมต่อกันอย่างไร สิ่งนี้เรียกว่าอะไร?",a:["Mental Image","Painter","Unity","Infographic"],e:"Mental Image คือจินตภาพ/แผนผังในใจที่ผู้ชมสร้างขึ้นเพื่อทำความเข้าใจพื้นที่"},
+{q:"ข้อใดเป็นแนวคิดสำคัญของ OER?",a:["ปิดกั้นทรัพยากรการศึกษา","แบ่งปันทรัพยากรการศึกษาคุณภาพสู่สังคมโลกอย่างเสรี","จำกัดการใช้เฉพาะองค์กร","ขายสิทธิ์การเข้าถึงเป็นหลัก"],e:"OER มุ่งให้เกิดการแบ่งปันทรัพยากรการศึกษาที่มีคุณภาพอย่างเสรี"},
+{q:"ข้อใดเกี่ยวข้องกับการนำทางผู้ชมในนิทรรศการโดยตรง?",a:["Continuity","Painter","OER","In-betweener"],e:"Continuity ช่วยสร้างความต่อเนื่องและนำทางสายตาของผู้ชม"}
+];
+
+let questions=[],current=0,answers=[];
+function shuffle(a){return [...a].sort(()=>Math.random()-0.5)}
+function start(){questions=shuffle(bank).map(x=>{const correct=x.a[0]; const a=shuffle(x.a); return {...x,a,correct};});answers=Array(questions.length).fill(null);current=0;render()}
+function render(){
+ const s=document.getElementById("screen"), q=questions[current], picked=answers[current];
+ const opts=q.a.map((o,i)=>`<button class="option ${picked===i?'selected':''}" onclick="pick(${i})"><span class="letter">${String.fromCharCode(65+i)}</span>${o}</button>`).join("");
+ s.innerHTML=`<div class="card"><div class="progress"><div class="bar" style="width:${((current+1)/questions.length)*100}%"></div></div>
+ <div class="qno">ข้อ ${current+1} / ${questions.length}</div><div class="question">${q.q}</div>${opts}
+ <div class="actions"><button class="btn secondary" onclick="prev()" ${current===0?'disabled':''}>← ก่อนหน้า</button>
+ <button class="btn primary" onclick="next()" ${picked===null?'disabled':''}>${current===questions.length-1?'ส่งคำตอบ':'ถัดไป →'}</button></div></div>`;
+}
+function pick(i){answers[current]=i;render()}
+function prev(){if(current>0){current--;render()}}
+function next(){if(answers[current]===null)return;if(current<questions.length-1){current++;render()}else finish()}
+function finish(){
+ let score=0;const rows=[];
+ questions.forEach((q,i)=>{
+   const chosen=q.a[answers[i]];
+   const ok=chosen===q.correct;
+   if(ok)score++;
+   rows.push(`<div class="review-item ${ok?'good':'bad'}"><b>${ok?'✅':'❌'} ข้อ ${i+1}</b>
+   <div>${q.q}</div><div class="ans">คำตอบของคุณ: ${chosen||'ไม่ได้ตอบ'}</div>
+   <div class="ans">คำตอบที่ถูก: ${q.correct}</div><div class="explain">💡 ${q.e}</div></div>`);
+ });
+ const pct=Math.round(score/questions.length*100);
+ document.getElementById("screen").innerHTML=`<div class="card result">
+   <div style="font-size:45px">🎉</div><h1>ทำข้อสอบเสร็จแล้ว!</h1>
+   <div class="score">${score}/${questions.length}</div><div class="small">${pct}%</div>
+   <p>ถูก ${score} ข้อ · ผิด ${questions.length-score} ข้อ</p>
+   <button class="btn primary big" onclick="start()">🔀 ทำชุดใหม่ (สุ่มข้อใหม่)</button>
+   <div class="review"><h2>📖 เฉลย</h2>${rows.join("")}</div>
+ </div>`;
+}
+document.getElementById("screen").innerHTML=`<div class="card start">
+ <div style="font-size:55px">🎨📚</div><h1>นักวิชาการช่างศิลป์</h1>
+ <p>แบบทดสอบฝึกทำจากเนื้อหาในเอกสาร<br>20 ข้อ • สุ่มข้อ • สุ่มตัวเลือก • เฉลยหลังส่ง</p>
+ <button class="btn primary big" onclick="start()">เริ่มทำข้อสอบ 🚀</button>
+ <p class="small" style="margin-top:18px">ทำแบบสบาย ๆ ไม่ต้องกดดัน 💜</p>
+ </div>`;
+</script>
+</body>
+</html>
